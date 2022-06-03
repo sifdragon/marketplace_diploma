@@ -1,0 +1,44 @@
+package com.example.marketplace_diploma.dto.cart;
+
+import com.example.marketplace_diploma.model.Cart;
+import com.example.marketplace_diploma.model.Product;
+
+public class CartItemDto {
+
+    private Integer id;
+    private Integer quantity;
+    private Product product;
+
+    public CartItemDto() {
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
+
+    public CartItemDto(Cart cart){
+        this.id = cart.getId();
+        this.setProduct(cart.getProduct());
+        this.quantity = cart.getQuantity();
+    }
+}
