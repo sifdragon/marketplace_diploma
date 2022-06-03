@@ -59,7 +59,7 @@ public class OrderService {
 
         return SessionCreateParams.LineItem.PriceData.builder()
                 .setCurrency("rub")
-                .setUnitAmount((long) checkoutItemDto.getPrice() * 100)
+                .setUnitAmount((long) (checkoutItemDto.getPrice() * 100))
                 .setProductData(
                         SessionCreateParams.LineItem.PriceData.ProductData.builder()
                                 .setName(checkoutItemDto.getProductName())
