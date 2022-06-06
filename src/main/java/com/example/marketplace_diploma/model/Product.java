@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Set;
 
 @Entity
 @Table(name = "products")
@@ -22,6 +23,12 @@ public class Product {
     @JsonIgnore
     @JoinColumn(name = "categoryId")
     Category category;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    Set<ItemUserRating> ratings;
+
+    public Product() {
+    }
 
     public Integer getId() {
         return id;
@@ -69,5 +76,13 @@ public class Product {
 
     public void setCategory(Category category) {
         this.category = category;
+    }
+
+    public Set<ItemUserRating> getRatings() {
+        return ratings;
+    }
+
+    public void setRatings(Set<ItemUserRating> ratings) {
+        this.ratings = ratings;
     }
 }

@@ -1,9 +1,14 @@
 package com.example.marketplace_diploma.service;
 
 import com.example.marketplace_diploma.dto.ProductDto;
+import com.example.marketplace_diploma.dto.RatingDto;
 import com.example.marketplace_diploma.exceptions.ProductNotExistsException;
 import com.example.marketplace_diploma.model.Category;
+import com.example.marketplace_diploma.model.ItemUserRating;
 import com.example.marketplace_diploma.model.Product;
+import com.example.marketplace_diploma.model.User;
+import com.example.marketplace_diploma.repository.CategoryRepo;
+import com.example.marketplace_diploma.repository.ItemUserRatingRepo;
 import com.example.marketplace_diploma.repository.ProductRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +22,15 @@ import java.util.Optional;
 public class ProductService {
     @Autowired
     ProductRepo productRepo;
+
+    @Autowired
+    ItemUserRatingRepo itemUserRatingRepo;
+
+    @Autowired
+    AuthenticationService authenticationService;
+
+    @Autowired
+    CategoryRepo categoryRepo;
 
     public void createProduct(ProductDto productDto, Category category){
         Product product = new Product();
@@ -70,5 +84,21 @@ public class ProductService {
         }
 
         return optionalProduct.get();
+    }
+
+    public void updateRating(RatingDto ratingDto, String token) {
+        authenticationService.authenticateToken(token);
+
+        User user = authenticationService.getUserFromToken(token);
+
+        ItemUserRating itemUserRating = itemUserRatingRepo.findByIdProductIdAndIdUserId(user.getId(), ratingDto.getProductId());
+        if (itemUserRating == null) {
+            itemUserRating = new ItemUserRating();
+        }
+
+        itemUserRating.setUser(user);
+        itemUserRating.setProduct(productRepo.findById(ratingDto.getProductId()).get());
+        itemUserRating.setRating(ratingDto.getRating());
+        itemUserRatingRepo.save(itemUserRating);
     }
 }

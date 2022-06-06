@@ -2,13 +2,13 @@ package com.example.marketplace_diploma.controller;
 
 import com.example.marketplace_diploma.common.ApiResponse;
 import com.example.marketplace_diploma.dto.ProductDto;
+import com.example.marketplace_diploma.dto.RatingDto;
 import com.example.marketplace_diploma.model.Category;
 import com.example.marketplace_diploma.repository.CategoryRepo;
 import com.example.marketplace_diploma.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,9 +24,9 @@ public class ProductController {
     CategoryRepo categoryRepo;
 
     @PostMapping("/add")
-    public ResponseEntity<ApiResponse> createProduct(@RequestBody ProductDto productDto){
+    public ResponseEntity<ApiResponse> createProduct(@RequestBody ProductDto productDto) {
         Optional<Category> optionalCategory = categoryRepo.findById(productDto.getCategoryId());
-        if (!optionalCategory.isPresent()){
+        if (!optionalCategory.isPresent()) {
             return new ResponseEntity<>(new ApiResponse(false, "Category does not exist"), HttpStatus.NOT_FOUND);
         }
         productService.createProduct(productDto, optionalCategory.get());
@@ -35,7 +35,7 @@ public class ProductController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<List<ProductDto>> getProducts(){
+    public ResponseEntity<List<ProductDto>> getProducts() {
         List<ProductDto> productDtos = productService.getAllProducts();
         return new ResponseEntity<>(productDtos, HttpStatus.OK);
     }
@@ -43,11 +43,18 @@ public class ProductController {
     @PostMapping("/update/{productId}")
     public ResponseEntity<ApiResponse> updateProduct(@PathVariable("productId") Integer productId, @RequestBody ProductDto productDto) throws Exception {
         Optional<Category> optionalCategory = categoryRepo.findById(productDto.getCategoryId());
-        if (!optionalCategory.isPresent()){
+        if (!optionalCategory.isPresent()) {
             return new ResponseEntity<>(new ApiResponse(false, "Category does not exist"), HttpStatus.NOT_FOUND);
         }
         productService.updateProduct(productDto, productId);
         return new ResponseEntity<>(new ApiResponse(true, "Product has been updated: " + optionalCategory.get().getCategoryName()), HttpStatus.OK);
+    }
 
+
+    @PostMapping("/rate")
+    public ResponseEntity<ApiResponse> updateRating(@RequestParam("token") String token, @RequestBody RatingDto ratingDto) {
+
+        productService.updateRating(ratingDto, token);
+        return new ResponseEntity<>(new ApiResponse(true, "Updated the rating"), HttpStatus.OK);
     }
 }

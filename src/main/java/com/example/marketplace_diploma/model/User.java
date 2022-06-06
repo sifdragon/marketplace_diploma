@@ -1,6 +1,7 @@
 package com.example.marketplace_diploma.model;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -21,6 +22,9 @@ public class User {
 
     @Column(name = "email")
     private String email;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    Set<ItemUserRating> ratings;
 
     public User() {
 
@@ -87,5 +91,13 @@ public class User {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
+    }
+
+    public Set<ItemUserRating> getRatings() {
+        return ratings;
+    }
+
+    public void setRatings(Set<ItemUserRating> ratings) {
+        this.ratings = ratings;
     }
 }
