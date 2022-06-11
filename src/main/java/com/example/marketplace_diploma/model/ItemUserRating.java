@@ -1,5 +1,8 @@
 package com.example.marketplace_diploma.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 
 @Entity
@@ -12,6 +15,7 @@ public class ItemUserRating {
     @ManyToOne
     @MapsId("productId")
     @JoinColumn(name = "product_id")
+    @JsonManagedReference
     Product product;
 
     @ManyToOne

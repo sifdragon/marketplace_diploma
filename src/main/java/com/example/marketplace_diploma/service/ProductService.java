@@ -90,14 +90,14 @@ public class ProductService {
         authenticationService.authenticateToken(token);
 
         User user = authenticationService.getUserFromToken(token);
-
-        ItemUserRating itemUserRating = itemUserRatingRepo.findByIdProductIdAndIdUserId(user.getId(), ratingDto.getProductId());
+        Product product = productRepo.getById(ratingDto.getProductId());
+        ItemUserRating itemUserRating = itemUserRatingRepo.findByUserAndProduct(user, product);
         if (itemUserRating == null) {
             itemUserRating = new ItemUserRating();
+            itemUserRating.setUser(user);
+            itemUserRating.setProduct(productRepo.findById(ratingDto.getProductId()).get());
         }
 
-        itemUserRating.setUser(user);
-        itemUserRating.setProduct(productRepo.findById(ratingDto.getProductId()).get());
         itemUserRating.setRating(ratingDto.getRating());
         itemUserRatingRepo.save(itemUserRating);
     }
