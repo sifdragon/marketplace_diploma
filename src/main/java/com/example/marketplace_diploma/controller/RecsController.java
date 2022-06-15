@@ -64,7 +64,6 @@ public class RecsController {
         Gson gson = new Gson();
         StringEntity postString = new StringEntity(gson.toJson(map));
         CloseableHttpClient httpClient = HttpClientBuilder.create().build();
-        System.out.println(postString.getContent());
         HttpPost post = new HttpPost(uri);
         post.setEntity(postString);
         post.setHeader("Content-type", "application/json");
@@ -91,28 +90,54 @@ public class RecsController {
 
         final String uri = "http://127.0.0.1:8000/cartRecs";
         Map<String, Map<String, Integer>> map = recsService.getRecs();
-//        List<Cart> cartItems = cartRepo.findAllByUserOrderByCreatedDateDesc(user);
-//        List<String> productsToRec = new ArrayList<>();
-//        for (Cart cartItem : cartItems) {
-//            productsToRec.add(cartItem.getProduct().getName());
-//        }
-//
-//        for (Map<String, Integer> nestedMap : map.values()) {
-//            nestedMap.keySet().retainAll(productsToRec);
-//        }
 
         Gson gson = new Gson();
         StringEntity postString = new StringEntity(gson.toJson(map));
         CloseableHttpClient httpClient = HttpClientBuilder.create().build();
-        System.out.println(postString.getContent());
         HttpPost post = new HttpPost(uri);
         post.setEntity(postString);
         post.setHeader("Content-type", "application/json");
         HttpResponse response = httpClient.execute(post);
         HttpEntity responseJsonEntity = response.getEntity();
         String responseString = EntityUtils.toString(responseJsonEntity, "UTF-8");
-        Map<String,Integer> result =
+        Map<String, ArrayList<ArrayList<Object>>> result =
                 new ObjectMapper().readValue(responseString, HashMap.class);
-        return new ArrayList<>();
+
+        List<Cart> cartItems = cartRepo.findAllByUserOrderByCreatedDateDesc(user);
+        List<String> productsToRec = new ArrayList<>();
+        for (Cart cartItem : cartItems) {
+            productsToRec.add(cartItem.getProduct().getName());
+        }
+        result.keySet().retainAll(productsToRec);
+
+        Map<String, Double> result2 = new HashMap<>();
+        for (ArrayList<ArrayList<Object>> outerList : result.values()) {
+            for (ArrayList<Object> innerList : outerList) {
+                result2.put(
+                        (String) innerList.get(1),
+                        result2.getOrDefault((String) innerList.get(1), (Double) innerList.get(0))
+                                + (Double) innerList.get(0));
+
+            }
+        }
+
+        List<ProductDto> productDtoList = new ArrayList<>();
+
+        for (int i = 0; i < 3; i++) {
+            Map.Entry<String, Double> maxEntry = null;
+            for (Map.Entry<String, Double> entry : result2.entrySet()) {
+                if (maxEntry == null || entry.getValue() > maxEntry.getValue()) {
+                    maxEntry = entry;
+                }
+            }
+            String maxKey = maxEntry.getKey();
+            Product productIn = productRepo.getProductByName(maxKey);
+            ProductDto productDtoIn = productService.transformProductToDto(productIn);
+            productDtoList.add(productDtoIn);
+            result2.remove(maxKey);
+
+        }
+
+        return productDtoList;
     }
 }
