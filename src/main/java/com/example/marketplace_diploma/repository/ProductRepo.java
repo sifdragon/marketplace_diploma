@@ -1,5 +1,6 @@
 package com.example.marketplace_diploma.repository;
 
+import com.example.marketplace_diploma.model.Category;
 import com.example.marketplace_diploma.model.Product;
 import com.example.marketplace_diploma.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;

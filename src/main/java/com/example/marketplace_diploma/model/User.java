@@ -1,6 +1,8 @@
 package com.example.marketplace_diploma.model;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -25,6 +27,9 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     Set<ItemUserRating> ratings;
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Set<User> subscriptions = new HashSet<>();
 
     public User() {
 
@@ -99,5 +104,13 @@ public class User {
 
     public void setRatings(Set<ItemUserRating> ratings) {
         this.ratings = ratings;
+    }
+
+    public Set<User> getSubscriptions() {
+        return subscriptions;
+    }
+
+    public void setSubscriptions(Set<User> subscriptions) {
+        this.subscriptions = subscriptions;
     }
 }

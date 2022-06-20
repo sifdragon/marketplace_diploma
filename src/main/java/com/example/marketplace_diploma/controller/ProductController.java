@@ -5,6 +5,7 @@ import com.example.marketplace_diploma.dto.ProductDto;
 import com.example.marketplace_diploma.dto.RatingDto;
 import com.example.marketplace_diploma.model.Category;
 import com.example.marketplace_diploma.repository.CategoryRepo;
+import com.example.marketplace_diploma.service.AuthenticationService;
 import com.example.marketplace_diploma.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,13 +24,18 @@ public class ProductController {
     @Autowired
     CategoryRepo categoryRepo;
 
+    @Autowired
+    AuthenticationService authenticationService;
+
     @PostMapping("/add")
-    public ResponseEntity<ApiResponse> createProduct(@RequestBody ProductDto productDto) {
+    public ResponseEntity<ApiResponse> createProduct(@RequestBody ProductDto productDto,
+                                                     @RequestParam("token") String token) {
+
         Optional<Category> optionalCategory = categoryRepo.findById(productDto.getCategoryId());
         if (!optionalCategory.isPresent()) {
             return new ResponseEntity<>(new ApiResponse(false, "Category does not exist"), HttpStatus.NOT_FOUND);
         }
-        productService.createProduct(productDto, optionalCategory.get());
+        productService.createProduct(productDto, optionalCategory.get(), token);
         return new ResponseEntity<>(new ApiResponse(true, "Product has been created in category: " + optionalCategory.get().getCategoryName()), HttpStatus.CREATED);
 
     }

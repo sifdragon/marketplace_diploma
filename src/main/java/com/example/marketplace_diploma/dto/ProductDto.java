@@ -17,6 +17,9 @@ public class ProductDto {
     private @NotNull String imageUrl;
     private @NotNull Integer categoryId;
 
+    private @NotNull String userName;
+
+
     public String getName() {
         return name;
     }
@@ -63,5 +66,13 @@ public class ProductDto {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 }

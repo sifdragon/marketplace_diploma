@@ -1,5 +1,7 @@
 package com.example.marketplace_diploma.service;
 
+import com.example.marketplace_diploma.common.ApiResponse;
+import com.example.marketplace_diploma.dto.ProductDto;
 import com.example.marketplace_diploma.dto.ResponseDto;
 import com.example.marketplace_diploma.dto.user.SignInDto;
 import com.example.marketplace_diploma.dto.SignInResponseDto;
@@ -7,9 +9,12 @@ import com.example.marketplace_diploma.dto.user.SignUpDto;
 import com.example.marketplace_diploma.exceptions.AuthFailException;
 import com.example.marketplace_diploma.exceptions.CustomException;
 import com.example.marketplace_diploma.model.AuthToken;
+import com.example.marketplace_diploma.model.Product;
 import com.example.marketplace_diploma.model.User;
 import com.example.marketplace_diploma.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -84,5 +89,17 @@ public class UserService {
         }
 
         return new SignInResponseDto("success", authToken.getToken());
+    }
+
+    public ResponseEntity<ApiResponse> addFriend(String token, ProductDto productDto){
+        authenticationService.authenticateToken(token);
+        User user = authenticationService.getUserFromToken(token);
+
+        User friend = userRepo.findByEmail(productDto.getUserName());
+
+        user.getSubscriptions().add(friend);
+        userRepo.save(user);
+
+        return new ResponseEntity<>(new ApiResponse(true, "Added friend"), HttpStatus.OK);
     }
 }

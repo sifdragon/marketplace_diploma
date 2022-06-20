@@ -1,6 +1,7 @@
 package com.example.marketplace_diploma.controller;
 
 import com.example.marketplace_diploma.dto.ProductDto;
+import com.example.marketplace_diploma.dto.RecsProductJson;
 import com.example.marketplace_diploma.model.Cart;
 import com.example.marketplace_diploma.model.Product;
 import com.example.marketplace_diploma.model.User;
@@ -59,10 +60,11 @@ public class RecsController {
         User user = authenticationService.getUserFromToken(token);
         final String uri = "http://127.0.0.1:8000/recs";
         Map<String, Map<String, Integer>> map = recsService.getRecs();
-
-
+        List<String> productsFromFriends = productService.getProductsFromFriends(user);
+        RecsProductJson recsProductJson = new RecsProductJson(map, productsFromFriends);
         Gson gson = new Gson();
-        StringEntity postString = new StringEntity(gson.toJson(map));
+        String jsonToSend = gson.toJson(recsProductJson);
+        StringEntity postString = new StringEntity(jsonToSend);
         CloseableHttpClient httpClient = HttpClientBuilder.create().build();
         HttpPost post = new HttpPost(uri);
         post.setEntity(postString);

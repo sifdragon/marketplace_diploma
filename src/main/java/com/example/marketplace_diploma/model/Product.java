@@ -30,6 +30,11 @@ public class Product {
     @JsonBackReference
     Set<ItemUserRating> ratings;
 
+    @OneToOne(targetEntity = User.class, fetch = FetchType.EAGER)
+    @JoinColumn(nullable = false, name = "user_id")
+    @JsonIgnore
+    private User user;
+
     public Product() {
     }
 
@@ -87,5 +92,13 @@ public class Product {
 
     public void setRatings(Set<ItemUserRating> ratings) {
         this.ratings = ratings;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

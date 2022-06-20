@@ -34,7 +34,7 @@ public class RecsService {
 
     public Map<String, Map<String, Integer>> getRecs() {
 
-        Map<String, Map<String, Integer>> outerUserAndProduct = new HashMap<String, Map<String, Integer>>();
+        Map<String, Map<String, Integer>> outerUserAndProduct;
 
         List<ItemUserRating> itemUserRating = itemUserRatingRepo.getAll();
 

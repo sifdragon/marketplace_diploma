@@ -13,9 +13,7 @@ import com.example.marketplace_diploma.repository.ProductRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 
@@ -32,13 +30,17 @@ public class ProductService {
     @Autowired
     CategoryRepo categoryRepo;
 
-    public void createProduct(ProductDto productDto, Category category){
+    public void createProduct(ProductDto productDto, Category category, String token){
+        authenticationService.authenticateToken(token);
+
+        User user = authenticationService.getUserFromToken(token);
         Product product = new Product();
         product.setName(productDto.getName());
         product.setDescription(productDto.getDescription());
         product.setPrice(productDto.getPrice());
         product.setImageUrl(productDto.getImageUrl());
         product.setCategory(category);
+        product.setUser(user);
         productRepo.save(product);
     }
 
@@ -50,6 +52,7 @@ public class ProductService {
         productDto.setImageUrl(product.getImageUrl());
         productDto.setCategoryId(product.getCategory().getId());
         productDto.setId(product.getId());
+        productDto.setUserName(product.getUser().getEmail());
         return productDto;
     }
     public List<ProductDto> getAllProducts() {
@@ -100,5 +103,19 @@ public class ProductService {
 
         itemUserRating.setRating(ratingDto.getRating());
         itemUserRatingRepo.save(itemUserRating);
+    }
+
+    public List<String> getProductsFromFriends(User user){
+        List<Product> allProducts = productRepo.getAll();
+        List<String> productNames = new ArrayList<>();
+        Set<User> subscriptions = user.getSubscriptions();
+
+        for (Product iterableProduct : allProducts){
+            if (subscriptions.contains(iterableProduct.getUser())) {
+                productNames.add(iterableProduct.getName());
+            }
+        }
+
+    return productNames;
     }
 }
